@@ -155,6 +155,7 @@ test("真实Electron审阅、专业操作、导出、冲突保留与关闭重开
         });
         for (const [viewIndex, viewName] of config.tabs.entries()) {
           await tab(viewIndex);
+          if(viewIndex===2)await expect(page.frameLocator("iframe[title=\'固定角色资料\']").locator("body")).toContainText("林溪私密");
           await page.screenshot({
             path: info.outputPath(
               theme + "-" + width + "-view-" + viewIndex + ".png",
