@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-19",
+  "records": [
+    {
+      "repository": "https://github.com/Mr-CG-end/whodunit",
+      "commit": "959be66803deba970478ada7c2a14d35683d7859",
+      "clone": "/Users/coso/Documents/dev/ai/limecloud/hetu/output/plugin-ij/research/whodunit",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "1a39b3770a40d27a7fe92550a7fe2d4e2b52ce95659ea95f015bf63dbc6a36d5"
+        },
+        {
+          "path": "src/engine/visibility.ts",
+          "sha256": "26cbbc3afe2c29b5a1fdfd613245add0a1590b2cb0d13fb9c4a01e3a8e81713e"
+        },
+        {
+          "path": "src/engine/release.ts",
+          "sha256": "daedf8be9dade5bb9af5bc256e0bac494838d10b69ab4e06414a50a17dce2ad9"
+        }
+      ],
+      "copied_code": false,
+      "license_boundary": "未发现许可证，仅研究结构，不复制"
+    },
+    {
+      "repository": "https://github.com/Alicifia/red-script-murder-mystery",
+      "commit": "dbff7807c91381bc802932c420e77261dc1171b5",
+      "clone": "/Users/coso/Documents/dev/ai/limecloud/hetu/output/plugin-ij/research/red-script",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sha256": "7ed12673aa6435a43c90f2d6bf6b8e7f16433c1d27a795af7d668c9f9555b586"
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "52bebe4b74e051e58c2df4c1f096c37e92b7885c8bd499e62cc65728e5dc18ba"
+        },
+        {
+          "path": "references/prompts/qc-leak.md",
+          "sha256": "dba63721cd41ec2c9fe86297782793bc88bb123ddbb2d7175a176f80b771e6fa"
+        }
+      ],
+      "copied_code": false,
+      "license_boundary": "CC BY-NC-SA 4.0，仅对照公开机制，不复制提示词或模板"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+import {createHash} from "node:crypto";
+import {newProject} from "../../src/domain/model.ts";
+export const original="林溪在雨港邮局等信。\n她把旧钥匙放进信封。\n\n第二天，她决定出发。\n";
+export const sha=(v:string|Uint8Array)=>createHash("sha256").update(v).digest("hex");
+export const sourceRef={kind:"document",work_ref:{workspace_id:"workspace_test",kind:"novel",object_id:"novel_test"},document_id:"doc_11111111-1111-4111-8111-111111111111",revision_id:"rev_11111111-1111-4111-8111-111111111111",sha256:sha(original)};
+export const range={source_index:0,byte_start:0,byte_end:Buffer.byteLength(original),quote:original};
+export const base=(r:any,key:string)=>({object_id:r.object.object_id,expected_revision:r.object.revision,expected_sha256:r.sha256,operation_key:key});
+export const selection=(r:any)=>({object_id:r.object.object_id,revision:r.object.revision});
+export function wav(value=6000,frames=800,rate=8000){const b=Buffer.alloc(44+frames*2);b.write('RIFF');b.writeUInt32LE(b.length-8,4);b.write('WAVEfmt ',8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(rate,24);b.writeUInt32LE(rate*2,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write('data',36);b.writeUInt32LE(frames*2,40);for(let n=0;n<frames;n++)b.writeInt16LE(value,44+n*2);return b;}
+
+export function scenario(_work?:any):any {const p=newProject("雨港来信");return {...p,premise:"旧邮局收到一封没有署名的信。",gm_notes:"先让每位角色自述，再发第一幕材料。",solution:"主持专有：寄信人是旧站管理员。",roles:[{id:"lin",name:"林溪",public_profile:"返乡的旅人。",private_brief:"林溪私密：她见过旧站钥匙。",entity_ref:null,entity_source_index:null},{id:"keeper",name:"守站人",public_profile:"留守邮局的人。",private_brief:"守站人私密：他保留了原始名册。",entity_ref:null,entity_source_index:null}],acts:[{id:"arrival",title:"第一幕 抵达",order:1,public_brief:"雨夜，众人在邮局相遇。",gm_notes:"先发邮戳，再交角色信。"},{id:"departure",title:"第二幕 启程",order:2,public_brief:"旧站的门被打开。",gm_notes:"核对推测后复盘。"}],clues:[{id:"seal",title:"旧邮戳",text:"邮戳早于林溪抵达。",act_id:"arrival",audience:"public",role_ids:[],required:true},{id:"letter",title:"角色信",text:"仅林溪可见：钥匙留在门后。",act_id:"arrival",audience:"private",role_ids:["lin"],required:true},{id:"register",title:"未来名册",text:"第二幕秘密：管理员留下了签名。",act_id:"departure",audience:"private",role_ids:["keeper"],required:true}]};}
