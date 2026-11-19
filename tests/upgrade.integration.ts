@@ -119,13 +119,11 @@ test(
         base(r, "real-v020-enable"),
       );
       assert.equal(JSON.stringify(upgraded.object.content.sessions), before);
-      assert.deepEqual(
-        await c.invoke("session_view", {
-          ...selection(upgraded),
-          session_id: "old",
-        }),
-        state,
-      );
+      const {project_ref:currentRef,...currentState}=await c.invoke("session_view",{...selection(upgraded),session_id:"old"});
+      const {project_ref:oldRef,...oldState}=state;
+      assert.deepEqual(currentState,oldState);
+      assert.equal(currentRef.sha256,upgraded.sha256);
+      assert.equal(oldRef.sha256,r.sha256);
       assert.equal(
         (await c.invoke("get_project", selection(first))).sha256,
         first.sha256,
