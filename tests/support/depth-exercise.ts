@@ -21,6 +21,8 @@ export async function depthExercise(
       depth: desired.depth,
     },
   });
+  // 独立移除用例固定新鲜基线，不把返工后已过期的正文复制成新工程。
+  const removalSeed = structuredClone(r.object.content);
   for (const [item, field] of Object.entries(depthFields))
     for (const row of r.object.content.depth[field])
       r = await c.invoke("put_" + item, { ...base(r, key()), [item]: row });
@@ -182,7 +184,7 @@ export async function depthExercise(
       .closed,
     true,
   );
-  const scratch = structuredClone(r.object.content);
+  const scratch = removalSeed;
   scratch.sessions = [];
   scratch.depth.test_runs = [];
   let remove = await c.invoke("save_project", {

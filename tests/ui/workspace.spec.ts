@@ -65,7 +65,7 @@ test("真实Electron审阅、专业操作、导出、冲突保留与关闭重开
       .first()
       .click();
     await shell
-      .getByRole("button", { name: "雨港来信", exact: false })
+      .getByRole("button", { name: "雨港人物与来信", exact: false })
       .first()
       .click();
     const open = async () => {

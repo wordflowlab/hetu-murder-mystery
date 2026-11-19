@@ -5,7 +5,7 @@
 body {
   margin: 0;
   background: var(--workbench-background);
-  background-attachment: fixed;
+  background-attachment: scroll;
   color: var(--ink);
   font:
     14px/1.65 -apple-system,
