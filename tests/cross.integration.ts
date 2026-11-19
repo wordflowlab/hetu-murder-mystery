@@ -187,6 +187,7 @@ test(
         "text",
         "markdown",
         [source.source_ref, projection.source_ref],
+        [source.content, handoffBody],
       );
       assert.equal(continued.contextSnapshots[1].content, handoffBody);
       stages.push(

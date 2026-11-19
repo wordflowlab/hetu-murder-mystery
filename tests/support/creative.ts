@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { sha } from "./import.ts";
-export async function readContext(c: any, taskRef: any, entry: any) {
+export async function readContext(c: any, taskRef: any, entry: any, expectedText?: string) {
   let range: any, end = 0, content = "", pages = 0, last: any;
   do {
     last = await c.ok("hetu_read_task_context", {
@@ -17,8 +17,9 @@ export async function readContext(c: any, taskRef: any, entry: any) {
     } else assert.equal(range, null);
   } while (!last.complete);
   assert.equal(end, last.size_bytes, "覆盖完整来源");
-  assert.equal(sha(content), entry.sha256, "拼接后完整原字节摘要一致");
-  return { ...last, content, range: { byte_start: 0, byte_end: end }, pages };
+  // resource的sha256固定整个资料修订，不能当成纯正文摘要。
+  if (expectedText !== undefined) assert.equal(sha(content), sha(expectedText), "拼接后完整原字节摘要一致");
+  return { ...last, content, content_sha256: sha(content), range: { byte_start: 0, byte_end: end }, pages };
 }
 export async function managed(c: any, action: string, input: any, key: string) {
   const p = await c.ok("hetu_prepare_management_operation", {
@@ -57,6 +58,7 @@ export async function candidate(
   kind = "text",
   format = "markdown",
   inputRefs: any[] = [],
+  expectedInputs: string[] = [],
 ) {
   const preview = await c.ok("hetu_preview_creative_task", {
     management_ref: c.management,
@@ -89,7 +91,7 @@ export async function candidate(
   );
   const contextSnapshots = [];
   for (const entry of context.entries) {
-    const read = await readContext(c, opened.task_ref, entry);
+    const read = await readContext(c, opened.task_ref, entry, expectedInputs[contextSnapshots.length]);
     assert.equal(read.complete, true, "本轮固定资料完整回读");
     contextSnapshots.push(read);
   }
