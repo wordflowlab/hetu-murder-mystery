@@ -18,45 +18,62 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: limecloud/hetu
-          ref: 3617eb7cabeda135f46d475eff28488d470f3bbe
+          ref: b75293837aaa220803b9dc964ba72b8646fa7244
           path: host
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: wordflowlab/hetu-script-supervisor
+          ref: 138b84e523b09ab30b1c526a63a1e7a169b80f1d
+          path: hetu-script-supervisor
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: wordflowlab/hetu-language-studio
+          ref: d7ba3beb4eac769e6ed29381a03bafa7ae0138ff
+          path: hetu-language-studio
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: wordflowlab/hetu-musical-studio
+          ref: 9cc536b5534361c7d10279d72956211c7cc8feae
+          path: hetu-musical-studio
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '25.0.0'
-      - name: Install test dependencies without compiling host
+      - name: Install dependencies without compiling host
         run: |
           (cd host && npm ci)
           (cd plugin && npm ci)
-      - name: Install browser for offline artifacts
+          (cd hetu-script-supervisor && npm ci && npm run package)
+          (cd hetu-language-studio && npm ci && npm run package)
+          (cd hetu-musical-studio && npm ci && npm run package)
+      - name: Install artifact browser
         working-directory: plugin
         run: npx playwright install chromium
-      - name: Build fixed plugin only
+      - name: Build and verify fixed plugin only
         working-directory: plugin
         run: |
           npm run build
           npm run check
           npm run test:unit
+          node scripts/verify-docs.mjs
           npm run package
-      - name: Verify signed host and exact plugin package
+      - name: Verify signed host and complete professional workflows
         working-directory: plugin
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/accept-installed.py
-      - name: Retain actual work surfaces and acceptance
+      - name: Retain professional results and actual work surfaces
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: official-installed-acceptance
           path: |
             plugin/output/installed-acceptance/*.json
+            plugin/output/installed-acceptance/*.txt
             plugin/output/installed-acceptance/*.html
-            plugin/output/installed-acceptance/*.epub
-            plugin/output/installed-acceptance/*.pdf
-            plugin/output/installed-acceptance/*.wav
-            plugin/output/installed-acceptance/*.srt
-            plugin/output/installed-acceptance/*.vtt
-            plugin/output/installed-acceptance/*.ass
             plugin/output/installed-acceptance/*.png
             plugin/output/installed-acceptance/*.log
             plugin/test-results/
