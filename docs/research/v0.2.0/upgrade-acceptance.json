@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-11-19T13:36:33.894Z",
+  "old_release": "https://github.com/wordflowlab/hetu-murder-mystery/releases/download/v0.1.0/org.wordflowlab.murder-mystery-0.1.0.tgz",
+  "old_archive_sha256": "1761a0cb369695f48bf5f9eafc166eedf60a47c2b401eff58a343281a376aaa4",
+  "old_package_sha256": "c2bf8995da6ddb2cbead5e4962bb9d9130ee6e8d387df5bdca39015374bfed24",
+  "new_package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+  "host_version": "hetu 0.12.6",
+  "public_old_package_created_project": true,
+  "old_session_created_by_public_v010": true,
+  "read_did_not_migrate": true,
+  "original_operation_preserved": true,
+  "old_revision_preserved": true,
+  "old_snapshot_and_replay_preserved": true,
+  "upgraded_revision": 4
+}

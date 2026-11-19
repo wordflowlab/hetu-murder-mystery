@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-19",
+  "core_version": "hetu 0.13.4",
+  "entry": "现有安装包独立CLI，未启动或覆盖GUI",
+  "plugin_id": "org.wordflowlab.murder-mystery",
+  "package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+  "fixed_ref": {
+    "object_id": "ext_34debb9b-d046-4619-9f8d-558a02795f4a",
+    "revision": 17,
+    "sha256": "528e57943c4464310edaad4e8145f645e6b26aeb0eac11c78a796eaf70f66705"
+  },
+  "actual_capabilities_and_fixed_project_read": true,
+  "scope": "当前安装版兼容发现和固定成果读取；完整专业旅程仍由正式0.12.6证据证明"
+}

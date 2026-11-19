@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-19",
+  "plugin_id": "org.wordflowlab.murder-mystery",
+  "version": "0.2.0",
+  "package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+  "archive_sha256": "f9ee51ad36578d60dd28b9354ee6040f96c7395df18a310a9a5e994fb2bcd62a",
+  "unit_tests": 85,
+  "machine_action_count": 62,
+  "skill_resource_action_count": 1,
+  "official_full_verification": "https://github.com/wordflowlab/hetu-murder-mystery/actions/runs/44532548851",
+  "official_source_commit": "4ef5501be659e7963addd1e32899b397c4b07d92",
+  "host": {
+    "version": "0.12.6",
+    "git_sha": "b75293837aaa220803b9dc964ba72b8646fa7244",
+    "archive_sha256": "de012d76bb9751d6f2ed78427c6887563fcfd4455ae19717c6f65a9182700ab3",
+    "source_build": false,
+    "signature_verified": true,
+    "gatekeeper": "/Applications/Hetu.app: accepted\nsource=Notarized Developer ID",
+    "staple": "Processing: /Applications/Hetu.app\nThe validate action worked!"
+  },
+  "professional_workflow": true,
+  "lifecycle": [
+    "install",
+    "disable",
+    "enable",
+    "uninstall",
+    "install"
+  ],
+  "fixed_source_continuation": true,
+  "independent_drama_video": true,
+  "ui_journeys": 2,
+  "actual_work_surfaces": 62,
+  "published_package_verified_separately": true,
+  "limits": [
+    "专业实测macOS arm64；Windows/Linux及原生窗口材质未验证",
+    "原创虚构工程与Agent模拟不证明真人测本、实际拍摄、语言学或音乐专业判断",
+    "没有外发、付费、正文采纳或定稿"
+  ],
+  "stage_evidence_reuse": [
+    {
+      "test": "machine",
+      "exit_code": 0,
+      "evidence_from_run": "44525950754",
+      "receipt_sha256": "8d1491571635749965dc230424f5365b421b81332e1bf22e83f30ef788d99a70"
+    }
+  ]
+}

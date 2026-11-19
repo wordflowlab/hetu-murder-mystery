@@ -1,0 +1,70 @@
+{
+  "recorded_at": "2026-11-19T13:28:59.668Z",
+  "host_version": "hetu 0.12.6",
+  "plugin_id": "org.wordflowlab.murder-mystery",
+  "package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+  "stages": [
+    "murder-mystery保存固定原始材料与专业成果",
+    "script-supervisor读取上游固定成果，保持自身专业字段与判断",
+    "language-studio读取上游固定成果，保持自身专业字段与判断",
+    "musical-studio读取上游固定成果，保持自身专业字段与判断",
+    "专业成果形成固定派生资料；下一稿真实任务目录与原字节回读一致",
+    "回读下游专业引用并保存下一轮目标，宿主只生成候选，原作品保持"
+  ],
+  "handoff_source_ref": {
+    "kind": "resource",
+    "work_ref": {
+      "workspace_id": "workspace_f3daaa90-6d64-4573-9330-50d580c99bd0",
+      "kind": "novel",
+      "object_id": "novel_b08a89af-bd17-4ce9-87b5-9bceaed3720e"
+    },
+    "resource_id": "resource_671bf10c-dc33-4bdb-967a-d2cb443716ab",
+    "revision": 1,
+    "sha256": "8757895b36959628d86677f34d7f3b7c778eec52dc2ad9b0dc27b1a8a4833d16"
+  },
+  "followup_task_kind": "chapter_draft",
+  "fixed_task_sources_verified": true,
+  "fixed_results": [
+    {
+      "owner_plugin_id": "org.wordflowlab.murder-mystery",
+      "object_id": "ext_d8b87c77-dce4-4aa9-af48-5e7fc3b57494",
+      "revision": 1,
+      "sha256": "fcf9a530c848ca371857ef2bf15259471c2eef06e217740f8d9e9f2baf1576ff"
+    },
+    {
+      "owner_plugin_id": "org.wordflowlab.script-supervisor",
+      "object_id": "ext_d17bcc2a-3482-4423-8393-aec750a315fb",
+      "revision": 1,
+      "sha256": "1901fe21b635b023a1b988f4cab72ffac7019ac746912d40d6eab7494462aec5"
+    },
+    {
+      "owner_plugin_id": "org.wordflowlab.language-studio",
+      "object_id": "ext_14d95bb1-7885-407a-9588-a6914f734acb",
+      "revision": 1,
+      "sha256": "1a63d5f0b13834a8cb0a85594754f25d8b85ced6935ac0c1b30d6905f78a8477"
+    },
+    {
+      "owner_plugin_id": "org.wordflowlab.musical-studio",
+      "object_id": "ext_013fd5fd-4602-4117-8a2b-c43a83128b8a",
+      "revision": 1,
+      "sha256": "b5c9999b74bebaa6da10a8fecdc2ba607e0a04ec75d7ec026a5bfdb62900a6ae"
+    }
+  ],
+  "original_fixed_ref": {
+    "revision_ref": {
+      "revision": 1
+    },
+    "sha256": "f5345809f2dc16a2f05b45d08440585ea793cb0f1e169e782fbb6e50548dab3e",
+    "work_ref": {
+      "kind": "novel",
+      "object_id": "novel_b08a89af-bd17-4ce9-87b5-9bceaed3720e",
+      "workspace_id": "workspace_f3daaa90-6d64-4573-9330-50d580c99bd0"
+    }
+  },
+  "adopted": false,
+  "finalized": false,
+  "limits": [
+    "原创演示材料，不是真人访谈或历史事实认证",
+    "未外发、付费、采纳或定稿"
+  ]
+}

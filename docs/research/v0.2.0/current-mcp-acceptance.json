@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-19",
+  "entry": "本次Codex对话实际hetu_call_action长连接",
+  "connected_core_version": "0.12.3",
+  "official_installed_host_verified_separately": "0.12.6",
+  "plugin_id": "org.wordflowlab.murder-mystery",
+  "package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+  "capabilities_sha256": "36ab0ff9e50bdb210cde7117912669b99ff420dc20b2a5d03af4c7eec5a48080",
+  "actual_action_count": 62,
+  "discovered_schema": "get_project",
+  "skill_resources": [
+    {
+      "resource": "SKILL.md",
+      "sha256": "5a56318fabf791269ad24138e8f785e144ff4d7a628a9d9c960dfbbea36d8e1b",
+      "bytes_equal_to_final_package": true,
+      "characters": 675
+    },
+    {
+      "resource": "references/workflows.md",
+      "sha256": "68072c1f47017a08b385485b513854f4e93cf7093e07f9f6e95815e109cc1806",
+      "bytes_equal_to_final_package": true,
+      "characters": 1644
+    },
+    {
+      "resource": "references/operations.md",
+      "sha256": "16947a2ff4c1482aef8790ef021fa03e4e962ddae021575cbb3a90164cd5833b",
+      "bytes_equal_to_final_package": true,
+      "characters": 6049
+    }
+  ],
+  "fixed_ref": {
+    "object_id": "ext_34debb9b-d046-4619-9f8d-558a02795f4a",
+    "revision": 17,
+    "sha256": "528e57943c4464310edaad4e8145f645e6b26aeb0eac11c78a796eaf70f66705"
+  },
+  "fixed_work_ref": {
+    "workspace_id": "workspace_01abb9b1-8e4a-46ac-a8ee-82d200f35875",
+    "kind": "novel",
+    "object_id": "novel_c070a2bc-10f4-4b55-a61b-981caa46f1ac"
+  },
+  "fixed_project_read_complete": true,
+  "repository_skill_comparison": "实际响应逐字节等于最终dist包",
+  "limits": [
+    "长连接发现和专业成果回读不替代正式宿主完整业务旅程",
+    "只读取原创隔离验收工程，不采纳或定稿"
+  ]
+}

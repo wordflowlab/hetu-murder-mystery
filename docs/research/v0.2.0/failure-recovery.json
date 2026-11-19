@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-19",
+  "final_package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+  "attempts": [
+    {
+      "run": "https://github.com/wordflowlab/hetu-murder-mystery/actions/runs/44525950754",
+      "result": "failed",
+      "machine_stage": "最终包全部专业动作通过；该阶段固定回执可独立复核。",
+      "finding": "大型主持资料超过单块传输预算，测试读取器误以为首块即为完整资料。",
+      "correction": "沿真实next_range逐块读取，校验固定摘要、UTF-8字节范围、连续覆盖与拼接摘要；增加两项回归。运行包无变化，后续流程以确切Actions来源和回执SHA复用已通过的机器阶段，重新执行接续、升级与两条界面旅程。"
+    },
+    {
+      "run": "https://github.com/wordflowlab/hetu-murder-mystery/actions/runs/44520896665",
+      "result": "failed",
+      "finding": "移除用例复制了返工后已经过期的角色正文和推导，Core以hetu.stale_evidence拒绝新工程。",
+      "correction": "独立移除用例固定未返工的新鲜基线；原工程仍保留待复核状态。"
+    },
+    {
+      "run": "https://github.com/wordflowlab/hetu-murder-mystery/actions/runs/44523476498",
+      "result": "failed",
+      "machine_stage": "全部专业动作通过，运行包为最终摘要。",
+      "finding": "联合用例提交旧版较短演示原文，却使用另一完整来源的引文坐标，被UTF-8边界校验拒绝。",
+      "correction": "四包使用固定的同一完整原文，保留引用边界核验。"
+    },
+    {
+      "scope": "本机实际Electron",
+      "result": "corrected_and_passed",
+      "finding": "背景attachment与共享滚动合同不符，旧版旅程还使用了不匹配的作品名称。",
+      "correction": "统一滚动样式与真实创建名称；完整机制和旧试玩两条界面旅程均通过。"
+    },
+    {
+      "scope": "本机CLI完整对话",
+      "result": "resumed_original_operations",
+      "finding": "发生unsafe_path及明确ENOSPC；一次写后回执文件无法保存。另有联合测试能力读取进程异常退出，该本机旅程不计通过。",
+      "correction": "只清理无进程引用的本任务临时副本和闲置开发运行时，保留持久作品及正式证据。先回读原键，已完成工程沿固定检查点继续；没有换键重建或直接修改作品文件。",
+      "final_fixed_revision": 17,
+      "final_fixed_sha256": "528e57943c4464310edaad4e8145f645e6b26aeb0eac11c78a796eaf70f66705"
+    },
+    {
+      "run": "https://github.com/wordflowlab/hetu-murder-mystery/actions/runs/44529963703",
+      "result": "failed",
+      "finding": "读取器将整个resource修订摘要错误当成纯正文摘要。两者应分别核验。",
+      "correction": "每块核对原context修订身份及连续UTF-8范围，最终正文与实际预期原材料逐字节比较；回归覆盖修订元数据摘要不同与正文篡改。"
+    }
+  ],
+  "final_full_verification": "https://github.com/wordflowlab/hetu-murder-mystery/actions/runs/44532548851",
+  "final_full_verification_status": "success",
+  "limits": [
+    "先前通过的单个阶段不能冒充整套运行通过。",
+    "本机资源不足与进程异常分别留证，不仅凭时间相近认定同一根因。"
+  ]
+}

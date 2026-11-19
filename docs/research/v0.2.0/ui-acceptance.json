@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-19",
+  "plugin_id": "org.wordflowlab.murder-mystery",
+  "package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+  "host_version": "hetu 0.12.6",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "tabs": [
+    "作者工程",
+    "角色与线索",
+    "玩家预览",
+    "试玩与复盘",
+    "接续创作"
+  ],
+  "empty_state": true,
+  "professional_actions": true,
+  "artifact_files": [
+    "角色资料.html"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "widths": [
+    1360,
+    760
+  ],
+  "reduced_transparency": true,
+  "CAS_preserves_input": true,
+  "explicit_rebase": true,
+  "close_reopen": true,
+  "dirty_buffer_restore": true,
+  "page_errors": [],
+  "limits": [
+    "原生窗口材质、系统输入法及Windows/Linux未由本测试证明"
+  ]
+}

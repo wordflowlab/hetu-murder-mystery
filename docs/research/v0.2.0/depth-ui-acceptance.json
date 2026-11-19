@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-19T13:38:51.671Z",
+  "plugin_id": "org.wordflowlab.murder-mystery",
+  "package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+  "host_version": "hetu 0.12.6",
+  "surface_origin": "fixed-packaged-host",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "tabs": [
+    "作者工程",
+    "角色与线索",
+    "玩家预览",
+    "试玩与复盘",
+    "接续创作"
+  ],
+  "geometry": [
+    {
+      "theme": "light",
+      "width": 1360,
+      "header_height": 58.09375,
+      "reading_top": 330.46875
+    },
+    {
+      "theme": "light",
+      "width": 760,
+      "header_height": 58.09375,
+      "reading_top": 330.46875
+    },
+    {
+      "theme": "dark",
+      "width": 1360,
+      "header_height": 58.09375,
+      "reading_top": 330.46875
+    },
+    {
+      "theme": "dark",
+      "width": 760,
+      "header_height": 58.09375,
+      "reading_top": 330.46875
+    }
+  ],
+  "empty_state": true,
+  "professional_actions": true,
+  "artifact_files": [
+    "完整主持本.html",
+    "完整角色本.html"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "widths": [
+    1360,
+    760
+  ],
+  "reduced_transparency": true,
+  "CAS_preserves_input": true,
+  "explicit_rebase": true,
+  "close_reopen": true,
+  "dirty_buffer_restore": true,
+  "page_errors": [],
+  "limits": [
+    "原生窗口材质、系统输入法及Windows/Linux未由本测试证明"
+  ]
+}
