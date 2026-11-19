@@ -120,5 +120,17 @@
     "context_full_bytes_verified": true,
     "candidate_saved_and_read": true,
     "adopted": false
+  },
+  "public_package_install": {
+    "version": "0.2.0",
+    "core_version": "hetu 0.13.4",
+    "package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+    "original_and_revised_preserved": true,
+    "original_operation_preserved": true,
+    "skill_resources_byte_verified": 3,
+    "other_states_preserved": 42,
+    "original_unrelated_states_preserved": 39,
+    "initial_plugin_count": 40,
+    "current_plugin_count": 43
   }
 }

@@ -1,0 +1,8 @@
+{
+  "release": "https://github.com/wordflowlab/hetu-murder-mystery/releases/tag/v0.2.0",
+  "source_commit": "a014a851ebf089f33e4fe273eb3ef5c108203bde",
+  "archive_sha256": "f9ee51ad36578d60dd28b9354ee6040f96c7395df18a310a9a5e994fb2bcd62a",
+  "package_sha256": "eb21aaae3b13a8f3c2b965e49ffae5ca52e6df22288b0b6edfff4d6218ce3f9e",
+  "files_byte_identical": 18,
+  "verified": true
+}
