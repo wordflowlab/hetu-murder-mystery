@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> Proposed
+    Proposed --> Saved: 固定输入与CAS保存
+    Saved --> Reviewed: 阅读与意见
+    Reviewed --> Revised: 明确返工
+    Revised --> Saved: 新修订
+    Saved --> Exported: 固定版本导出
+    Exported --> Saved: 回读工程继续

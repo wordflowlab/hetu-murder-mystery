@@ -1,0 +1,9 @@
+stateDiagram-v2
+ [*] --> Prepared
+ Prepared --> Testing: 固定作者修订与完整快照
+ Testing --> Testing: 合法搜证交换投票
+ Testing --> NextRound: 条件通过或明确跳过
+ NextRound --> Testing: 下一轮
+ NextRound --> Reviewed: 全轮完成并复盘关闭
+ Reviewed --> Revised: 修改专业工程
+ Revised --> Prepared: 新版重新测本

@@ -1,0 +1,44 @@
+{
+  "rendered": [
+    {
+      "source": "research/evidence/diagrams/02-0.mmd",
+      "rendered": "research/evidence/diagrams/02-0.svg",
+      "sha256": "1c1bf31c2e001caa784fd441abed71bb51ddb4e6980cabd2969b99f039bd2a0e"
+    },
+    {
+      "source": "research/evidence/diagrams/03-0.mmd",
+      "rendered": "research/evidence/diagrams/03-0.svg",
+      "sha256": "b58dd4ac22f9a69f7e08bf08fa8cf5cb4eea3c75b10a89196f44cc3ce4522918"
+    },
+    {
+      "source": "research/evidence/diagrams/03-1.mmd",
+      "rendered": "research/evidence/diagrams/03-1.svg",
+      "sha256": "c293b4c5365e47e19480ae9e47946a7d280601d8054caeee0f3d66d581342c66"
+    },
+    {
+      "source": "research/evidence/diagrams/05-0.mmd",
+      "rendered": "research/evidence/diagrams/05-0.svg",
+      "sha256": "e685f83934e5d0fd0e4e04b3b0290ecfb2b64fb17f2abf3e3060efe489c334ae"
+    },
+    {
+      "source": "research/evidence/diagrams/09-0.mmd",
+      "rendered": "research/evidence/diagrams/09-0.svg",
+      "sha256": "482d54ddba7ea82cf8a870c5798797e2476e266f574f5f058454ee4f0e6100d8"
+    },
+    {
+      "source": "research/evidence/diagrams/10-0.mmd",
+      "rendered": "research/evidence/diagrams/10-0.svg",
+      "sha256": "a17f31913999a8b53eea94bb3c1ab0766c5387cbefb961bac8351f78ce73c8e4"
+    },
+    {
+      "source": "research/evidence/diagrams/10-1.mmd",
+      "rendered": "research/evidence/diagrams/10-1.svg",
+      "sha256": "3b9ef6c676316c75c0ba80d1caa9013552a36e2a2ed0c47f5bd9b2ecd31c0517"
+    },
+    {
+      "source": "research/evidence/diagrams/10-2.mmd",
+      "rendered": "research/evidence/diagrams/10-2.svg",
+      "sha256": "fe400076bdea01d9658062c7928d154213050b95bba2b1be8e87e18bd3f79b56"
+    }
+  ]
+}

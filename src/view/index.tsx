@@ -1,5 +1,5 @@
-import {readArtifact} from "./artifact.ts";
-import {ProfessionalView} from "./professional.tsx";
+import { readArtifact } from "./artifact.ts";
+import { ProfessionalView } from "./professional.tsx";
 import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import manifest from "../../contracts/plugin-manifest.json" with { type: "json" };
@@ -62,9 +62,7 @@ function value(v: any): React.ReactNode {
         )
         .map(([k, x]) => (
           <React.Fragment key={k}>
-            <dt>
-              {labels[k] ?? k}
-            </dt>
+            <dt>{labels[k] ?? k}</dt>
             <dd>{value(x)}</dd>
           </React.Fragment>
         ))}
@@ -96,8 +94,13 @@ function App() {
   // 专业视图的背景读取与作者操作共用同一后端，保持请求顺序。
   const invocationQueue = useRef<Promise<unknown>>(Promise.resolve());
   async function invoke(action: string, input: any = {}) {
-    const request = invocationQueue.current.then(() => api.invoke(action, input));
-    invocationQueue.current = request.then(() => undefined, () => undefined);
+    const request = invocationQueue.current.then(() =>
+      api.invoke(action, input),
+    );
+    invocationQueue.current = request.then(
+      () => undefined,
+      () => undefined,
+    );
     const r: any = await request;
     if (r.status !== "succeeded")
       throw Object.assign(
@@ -181,7 +184,9 @@ function App() {
       goal:
         "使用" +
         title +
-        "处理当前固定作品：" +
+        "处理当前固定作品的" +
+        config.tabs[tab] +
+        "：" +
         (goal || "读取现有成果和依据，完善本页并接续下一轮创作。"),
       ...(record ? { object_ref: fixed() } : {}),
       ...{},
@@ -245,9 +250,29 @@ function App() {
     return r;
   }
   async function recover() {
-    const r = await invoke("get_operation", {
-      operation_key: pending.input.operation_key,
-    });
+    let r: any;
+    try {
+      r = await invoke("get_operation", {
+        operation_key: pending.input.operation_key,
+      });
+    } catch (e) {
+      if ((e as any).code !== "not_found") throw e;
+      setPending(undefined);
+      await api.buffer(
+        editing
+          ? {
+              editor,
+              editing,
+              object_id: record?.object.object_id,
+              baseline: record
+                ? { revision: record.object.revision, sha256: record.sha256 }
+                : undefined,
+            }
+          : null,
+      );
+      setStatus("原操作已确认未落盘，输入保留；请修正后重新准备");
+      return;
+    }
     setRecord(r);
     setPending(undefined);
     setEditing(false);
@@ -256,6 +281,7 @@ function App() {
     await refresh();
     setStatus("已回读原操作结果");
   }
+
   async function show(action: string, args: any = {}) {
     setPanel({
       title:
@@ -265,7 +291,11 @@ function App() {
     });
   }
   async function download(action: string, args: any = {}) {
-    const {bytes,record:last,sha}=await readArtifact(invoke,action,{...selection(),...args});
+    const {
+      bytes,
+      record: last,
+      sha,
+    } = await readArtifact(invoke, action, { ...selection(), ...args });
     let binary = "";
     for (let at = 0; at < bytes.length; at += 32768)
       binary += String.fromCharCode(...bytes.subarray(at, at + 32768));
@@ -279,7 +309,10 @@ function App() {
     if (!saved) throw Error("当前宿主未提供派生文件保存服务。");
     setStatus(
       saved.saved
-        ? "文件已按固定修订导出" + ((last.losses?.length ?? 0) ? "。转换说明：" + last.losses.join("；") : "")
+        ? "文件已按固定修订导出" +
+            ((last.losses?.length ?? 0)
+              ? "。转换说明：" + last.losses.join("；")
+              : "")
         : saved.cancelled
           ? "已取消导出"
           : "文件尚未保存",
@@ -330,7 +363,9 @@ function App() {
           )}
         </div>
       )}
-      {(status||busy) && <p role="status">{status||"正在整理成果，请稍候"}</p>}
+      {(status || busy) && (
+        <p role="status">{status || "正在整理成果，请稍候"}</p>
+      )}
       <div className="goal">
         <input
           aria-label="本次目标"
@@ -428,8 +463,41 @@ function App() {
             {!count && (
               <p className="muted">尚无专业记录，可让AI根据本次目标准备。</p>
             )}
-            <ProfessionalView p={p} tab={tab} invoke={invoke} run={run} show={show} download={download} write={write} selection={selection} />
-            {tab===config.tabs.length-1&&<section><h3>围绕固定成果继续</h3><p>先读取本次成果与依据，再准备下一环节。正文采纳与定稿独立决定。</p><div className="actions"><button onClick={()=>void run(()=>show("build_context",{goal:goal||"按当前成果接续创作",max_chars:12000}))}>查看接续材料</button><button onClick={()=>void run(handoff)}>复制AI接续说明</button></div></section>}
+            <ProfessionalView
+              p={p}
+              tab={tab}
+              invoke={invoke}
+              run={run}
+              show={show}
+              download={download}
+              write={write}
+              selection={selection}
+            />
+            {tab === config.tabs.length - 1 && (
+              <section>
+                <h3>围绕固定成果继续</h3>
+                <p>
+                  先读取本次成果与依据，再准备下一环节。正文采纳与定稿独立决定。
+                </p>
+                <div className="actions">
+                  <button
+                    onClick={() =>
+                      void run(() =>
+                        show("build_context", {
+                          goal: goal || "按当前成果接续创作",
+                          max_chars: 12000,
+                        }),
+                      )
+                    }
+                  >
+                    查看接续材料
+                  </button>
+                  <button onClick={() => void run(handoff)}>
+                    复制AI接续说明
+                  </button>
+                </div>
+              </section>
+            )}
           </main>
         </>
       )}

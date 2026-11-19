@@ -33,3 +33,36 @@
 | build_context | 准备有界创作上下文 | object_id, goal, max_chars | read |
 | create_handoff | 准备精确AI交接 | object_id, goal | read |
 | get_operation | 回读原操作 | operation_key | read |
+| enable_depth | 明确启用完整创作结构 | object_id, expected_revision, expected_sha256, operation_key | managed_write |
+| put_fact | 维护案件事实 | object_id, expected_revision, expected_sha256, operation_key, fact | managed_write |
+| remove_fact | 移除案件事实 | object_id, expected_revision, expected_sha256, operation_key, fact_id | managed_write |
+| put_briefing | 维护角色分幕正文 | object_id, expected_revision, expected_sha256, operation_key, briefing | managed_write |
+| remove_briefing | 移除角色分幕正文 | object_id, expected_revision, expected_sha256, operation_key, briefing_id | managed_write |
+| put_deduction | 维护证据推导 | object_id, expected_revision, expected_sha256, operation_key, deduction | managed_write |
+| remove_deduction | 移除证据推导 | object_id, expected_revision, expected_sha256, operation_key, deduction_id | managed_write |
+| put_clue_rule | 维护搜证交换规则 | object_id, expected_revision, expected_sha256, operation_key, clue_rule | managed_write |
+| remove_clue_rule | 移除搜证交换规则 | object_id, expected_revision, expected_sha256, operation_key, clue_rule_id | managed_write |
+| put_round | 维护机制轮次 | object_id, expected_revision, expected_sha256, operation_key, round | managed_write |
+| remove_round | 移除机制轮次 | object_id, expected_revision, expected_sha256, operation_key, round_id | managed_write |
+| put_ending | 维护候选结局 | object_id, expected_revision, expected_sha256, operation_key, ending | managed_write |
+| remove_ending | 移除候选结局 | object_id, expected_revision, expected_sha256, operation_key, ending_id | managed_write |
+| put_review | 维护固定测本意见 | object_id, expected_revision, expected_sha256, operation_key, review | managed_write |
+| remove_review | 移除固定测本意见 | object_id, expected_revision, expected_sha256, operation_key, review_id | managed_write |
+| briefing_basis | 读取角色正文依据 | object_id, role_id, act_id, known_fact_ids | read |
+| deduction_basis | 读取证据推导依据 | object_id, deduction | read |
+| depth_target_digest | 读取完整创作意见摘要 | object_id, target_kind, target_id | read |
+| check_depth | 核对完整创作覆盖与过期依据 | object_id | read |
+| deduction_view | 按可见证据核对推导前提 | object_id, deduction_id, clue_ids | read |
+| start_test | 固定完整作者版本开始机制测本 | object_id, expected_revision, expected_sha256, operation_key, test_id, label, mode, assignments | managed_write |
+| search_test_clue | 按角色搜证并原子扣预算 | object_id, expected_revision, expected_sha256, operation_key, test_id, role_id, clue_id | managed_write |
+| share_test_clue | 交换实际持有线索 | object_id, expected_revision, expected_sha256, operation_key, test_id, role_id, target_role_id, clue_id | managed_write |
+| reveal_test_clue | 按揭示轮次记录线索发放 | object_id, expected_revision, expected_sha256, operation_key, test_id, clue_id | managed_write |
+| vote_test | 记录本轮角色一票 | object_id, expected_revision, expected_sha256, operation_key, test_id, role_id, option | managed_write |
+| advance_test_round | 完成当前轮次 | object_id, expected_revision, expected_sha256, operation_key, test_id | managed_write |
+| skip_test_round | 明确记录跳过轮次 | object_id, expected_revision, expected_sha256, operation_key, test_id, reason | managed_write |
+| close_test | 结束完整测本并复盘 | object_id, expected_revision, expected_sha256, operation_key, test_id, text | managed_write |
+| test_view | 回放固定版本机制测本 | object_id, test_id | read |
+| test_player_view | 读取固定测本角色资料 | object_id, test_id, role_id | read |
+| export_depth_player | 导出完整分幕角色本 | object_id, role_id, act_id | read |
+| export_depth_gm | 导出完整主持与机制本 | object_id | read |
+| export_test_player | 导出固定测本玩家资料 | object_id, test_id, role_id | read |

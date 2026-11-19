@@ -1,0 +1,1249 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "format_version": {
+      "const": 1
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 170,
+      "minLength": 1
+    },
+    "basis_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "owner_plugin_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1
+          },
+          "object_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "owner_plugin_id",
+          "object_id",
+          "revision",
+          "sha256"
+        ]
+      },
+      "maxItems": 100
+    },
+    "premise": {
+      "type": "string",
+      "maxLength": 8000,
+      "minLength": 0
+    },
+    "gm_notes": {
+      "type": "string",
+      "maxLength": 16000,
+      "minLength": 0
+    },
+    "solution": {
+      "type": "string",
+      "maxLength": 16000,
+      "minLength": 0
+    },
+    "sessions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/legacy_session"
+      },
+      "maxItems": 8
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/role"
+      },
+      "maxItems": 100
+    },
+    "acts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/act"
+      },
+      "maxItems": 100
+    },
+    "clues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/clue"
+      },
+      "maxItems": 100
+    },
+    "depth": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fact"
+          },
+          "maxItems": 100
+        },
+        "briefings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/briefing"
+          },
+          "maxItems": 200
+        },
+        "deductions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/deduction"
+          },
+          "maxItems": 100
+        },
+        "clue_rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/clue_rule"
+          },
+          "maxItems": 200
+        },
+        "rounds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/round"
+          },
+          "maxItems": 100
+        },
+        "endings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ending"
+          },
+          "maxItems": 100
+        },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/review"
+          },
+          "maxItems": 200
+        },
+        "test_runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/test_run"
+          },
+          "maxItems": 50
+        }
+      },
+      "required": [
+        "version",
+        "facts",
+        "briefings",
+        "deductions",
+        "clue_rules",
+        "rounds",
+        "endings",
+        "reviews",
+        "test_runs"
+      ]
+    }
+  },
+  "required": [
+    "format_version",
+    "title",
+    "basis_refs",
+    "premise",
+    "gm_notes",
+    "solution",
+    "sessions",
+    "roles",
+    "acts",
+    "clues"
+  ],
+  "$defs": {
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "public_profile": {
+          "type": "string",
+          "maxLength": 8000,
+          "minLength": 0
+        },
+        "private_brief": {
+          "type": "string",
+          "maxLength": 16000,
+          "minLength": 0
+        },
+        "entity_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entity_source_index": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 99
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "public_profile",
+        "private_brief",
+        "entity_ref",
+        "entity_source_index"
+      ]
+    },
+    "act": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "public_brief": {
+          "type": "string",
+          "maxLength": 8000,
+          "minLength": 0
+        },
+        "gm_notes": {
+          "type": "string",
+          "maxLength": 8000,
+          "minLength": 0
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "order",
+        "public_brief",
+        "gm_notes"
+      ]
+    },
+    "clue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 8000,
+          "minLength": 1
+        },
+        "act_id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "audience": {
+          "enum": [
+            "public",
+            "private"
+          ]
+        },
+        "role_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1
+          },
+          "maxItems": 20
+        },
+        "required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "text",
+        "act_id",
+        "audience",
+        "role_ids",
+        "required"
+      ]
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 170
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "time_label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 170
+        },
+        "role_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "maxItems": 30
+        },
+        "clue_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "maxItems": 30
+        },
+        "qualification": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 3000
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "text",
+        "order",
+        "time_label",
+        "role_ids",
+        "clue_ids",
+        "qualification"
+      ]
+    },
+    "briefing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "role_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "act_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 170
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30000
+        },
+        "goals": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "maxItems": 20
+        },
+        "known_fact_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "maxItems": 100
+        },
+        "basis_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "role_id",
+        "act_id",
+        "title",
+        "body",
+        "goals",
+        "known_fact_ids",
+        "basis_sha256"
+      ]
+    },
+    "deduction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 170
+        },
+        "conclusion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000
+        },
+        "act_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "clue_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "maxItems": 100
+        },
+        "premise_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "maxItems": 100
+        },
+        "reasoning": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000
+        },
+        "basis_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "conclusion",
+        "act_id",
+        "clue_ids",
+        "premise_ids",
+        "reasoning",
+        "basis_sha256"
+      ]
+    },
+    "clue_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "clue_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "searchable": {
+          "enum": [
+            true,
+            false
+          ]
+        },
+        "shareable": {
+          "enum": [
+            true,
+            false
+          ]
+        },
+        "cost": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        }
+      },
+      "required": [
+        "id",
+        "clue_id",
+        "searchable",
+        "shareable",
+        "cost"
+      ]
+    },
+    "round": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "act_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 170
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "kind": {
+          "enum": [
+            "search",
+            "exchange",
+            "vote",
+            "reveal"
+          ]
+        },
+        "budget": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "required_clue_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "maxItems": 100
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 170
+          },
+          "maxItems": 30
+        },
+        "all_roles_vote": {
+          "enum": [
+            true,
+            false
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "act_id",
+        "title",
+        "order",
+        "kind",
+        "budget",
+        "required_clue_ids",
+        "options",
+        "all_roles_vote"
+      ]
+    },
+    "ending": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 170
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30000
+        },
+        "round_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "option": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 170
+        },
+        "min_votes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "body",
+        "round_id",
+        "option",
+        "min_votes"
+      ]
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "target_kind": {
+          "enum": [
+            "briefing",
+            "deduction",
+            "round"
+          ]
+        },
+        "target_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "target_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "origin": {
+          "enum": [
+            "author",
+            "agent"
+          ]
+        },
+        "comment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ]
+        },
+        "resolution": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 5000
+        },
+        "category": {
+          "enum": [
+            "leakage",
+            "stuck",
+            "participation",
+            "logic",
+            "other"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "target_kind",
+        "target_id",
+        "target_sha256",
+        "origin",
+        "comment",
+        "status",
+        "resolution",
+        "category"
+      ]
+    },
+    "depth_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fact"
+          },
+          "maxItems": 100
+        },
+        "briefings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/briefing"
+          },
+          "maxItems": 200
+        },
+        "deductions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/deduction"
+          },
+          "maxItems": 100
+        },
+        "clue_rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/clue_rule"
+          },
+          "maxItems": 200
+        },
+        "rounds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/round"
+          },
+          "maxItems": 100
+        },
+        "endings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ending"
+          },
+          "maxItems": 100
+        },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/review"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "version",
+        "facts",
+        "briefings",
+        "deductions",
+        "clue_rules",
+        "rounds",
+        "endings",
+        "reviews"
+      ]
+    },
+    "legacy_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "premise": {
+          "type": "string",
+          "maxLength": 8000,
+          "minLength": 0
+        },
+        "gm_notes": {
+          "type": "string",
+          "maxLength": 16000,
+          "minLength": 0
+        },
+        "solution": {
+          "type": "string",
+          "maxLength": 16000,
+          "minLength": 0
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/role"
+          },
+          "maxItems": 20
+        },
+        "acts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/act"
+          },
+          "maxItems": 20
+        },
+        "clues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/clue"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "premise",
+        "gm_notes",
+        "solution",
+        "roles",
+        "acts",
+        "clues"
+      ]
+    },
+    "complete_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "premise": {
+          "type": "string",
+          "maxLength": 8000,
+          "minLength": 0
+        },
+        "gm_notes": {
+          "type": "string",
+          "maxLength": 16000,
+          "minLength": 0
+        },
+        "solution": {
+          "type": "string",
+          "maxLength": 16000,
+          "minLength": 0
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/role"
+          },
+          "maxItems": 20
+        },
+        "acts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/act"
+          },
+          "maxItems": 20
+        },
+        "clues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/clue"
+          },
+          "maxItems": 200
+        },
+        "depth": {
+          "$ref": "#/$defs/depth_spec"
+        }
+      },
+      "required": [
+        "premise",
+        "gm_notes",
+        "solution",
+        "roles",
+        "acts",
+        "clues",
+        "depth"
+      ]
+    },
+    "author_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owner_plugin_id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "object_id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "owner_plugin_id",
+        "object_id",
+        "revision",
+        "sha256"
+      ]
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role_id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "participant": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "role_id",
+        "participant"
+      ]
+    },
+    "legacy_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "kind": {
+          "enum": [
+            "release",
+            "skip",
+            "advance",
+            "guess",
+            "close"
+          ]
+        },
+        "act_id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "clue_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "role_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 8000,
+          "minLength": 0
+        }
+      },
+      "required": [
+        "sequence",
+        "kind",
+        "act_id",
+        "clue_id",
+        "role_id",
+        "text"
+      ]
+    },
+    "mechanism_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "kind": {
+          "enum": [
+            "search",
+            "share",
+            "vote",
+            "reveal",
+            "advance",
+            "skip",
+            "close"
+          ]
+        },
+        "round_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "role_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target_role_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "clue_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "option": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 170
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 5000
+        }
+      },
+      "required": [
+        "sequence",
+        "kind",
+        "round_id",
+        "role_id",
+        "target_role_id",
+        "clue_id",
+        "option",
+        "text"
+      ]
+    },
+    "legacy_session": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "mode": {
+          "enum": [
+            "agent_simulated",
+            "human_recorded"
+          ]
+        },
+        "author_ref": {
+          "$ref": "#/$defs/author_ref"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/legacy_snapshot"
+        },
+        "assignments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assignment"
+          },
+          "maxItems": 20
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/legacy_event"
+          },
+          "maxItems": 500
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "mode",
+        "author_ref",
+        "snapshot",
+        "assignments",
+        "events"
+      ]
+    },
+    "test_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "mode": {
+          "enum": [
+            "agent_simulated",
+            "human_recorded"
+          ]
+        },
+        "author_ref": {
+          "$ref": "#/$defs/author_ref"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/complete_snapshot"
+        },
+        "assignments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assignment"
+          },
+          "maxItems": 20
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mechanism_event"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "mode",
+        "author_ref",
+        "snapshot",
+        "assignments",
+        "events"
+      ]
+    }
+  }
+}

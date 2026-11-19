@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import { sha } from "./import.ts";
 export async function managed(c: any, action: string, input: any, key: string) {
   const p = await c.ok("hetu_prepare_management_operation", {
@@ -28,14 +29,22 @@ export async function managed(c: any, action: string, input: any, key: string) {
     ...(result.task_locator ? { task_locator: result.task_locator } : {}),
   };
 }
-export async function candidate(c: any, content: string, key: string) {
+export async function candidate(
+  c: any,
+  content: string,
+  key: string,
+  taskKind = "chapter_draft",
+  kind = "text",
+  format = "markdown",
+  inputRefs: any[] = [],
+) {
   const preview = await c.ok("hetu_preview_creative_task", {
     management_ref: c.management,
     work_ref: c.work,
     scope_ref: c.management.scope_ref,
-    task_kind: "chapter_draft",
+    task_kind: taskKind,
     brief: "按固定目标准备隔离候选，不采纳或定稿。",
-    input_refs: [],
+    input_refs: inputRefs,
     client_adapter: "codex",
     language_tag: "zh-CN",
   });
@@ -49,15 +58,34 @@ export async function candidate(c: any, content: string, key: string) {
     task_locator: task.task_locator,
   });
   task.task_ref = opened.task_ref;
+  const context = await c.ok("hetu_list_task_context", {
+    task_ref: opened.task_ref,
+    limit: 100,
+  });
+  assert.deepEqual(
+    context.entries.map((entry: any) => entry.fixed_ref),
+    inputRefs,
+    "下一稿实际任务固定了全部已选来源",
+  );
+  const contextSnapshots = [];
+  for (const entry of context.entries) {
+    const read = await c.ok("hetu_read_task_context", {
+      task_ref: opened.task_ref,
+      context_ref: entry.context_ref,
+      max_bytes: 65536,
+    });
+    assert.equal(read.complete, true, "本轮固定资料完整回读");
+    contextSnapshots.push(read);
+  }
   const result = await c.ok("hetu_submit_creative_result", {
     task_ref: task.task_ref,
     request_sha256: task.request_sha256,
     candidates: [
       {
-        kind: "text",
+        kind,
         title: "雨港固定候选",
-        source_format: "markdown",
-        source_ref_indices: [],
+        source_format: format,
+        source_ref_indices: inputRefs.map((_, index) => index),
         content,
       },
     ],
@@ -75,6 +103,8 @@ export async function candidate(c: any, content: string, key: string) {
     task,
     result,
     draft,
+    context,
+    contextSnapshots,
     source_ref: {
       kind: "document",
       work_ref: c.work,

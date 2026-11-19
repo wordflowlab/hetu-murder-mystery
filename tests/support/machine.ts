@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import {createHash} from "node:crypto";
-import {canonical} from "../../vendor/project-store.ts";
-import toolRoutes from "./tool-routes.json" with {type:"json"};
+import { createHash } from "node:crypto";
+import { canonical } from "../../vendor/project-store.ts";
+import toolRoutes from "./tool-routes.json" with { type: "json" };
 import { spawnSync } from "node:child_process";
 import { cp, mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -10,10 +10,12 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import manifest from "../../contracts/plugin-manifest.json" with { type: "json" };
 export const host = path.resolve(
-  process.env.HETU_SOURCE ?? "../../limecloud/hetu",
+  process.env.HETU_SOURCE ?? "../hetu-production-host-20261119",
 );
-export async function start() {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "hetu-murder-mystery-"));
+export async function start(workKind = "novel") {
+  const directory = await mkdtemp(
+    path.join(os.tmpdir(), "hetu-murder-mystery-"),
+  );
   await mkdir(path.join(directory, "requests"));
   const packageDirectory = path.join(directory, "package");
   await cp(
@@ -82,35 +84,137 @@ export async function start() {
     }),
   );
   const catalog = (await client.listTools()).tools;
-  const available = new Set(catalog.map((t:any)=>t.name));
-  const actionByTool:Record<string,string>=toolRoutes;
-  async function readView(action:string,input:any,expected:string,result_path="",offset=0):Promise<any>{
-    const response:any=(await client.callTool({name:"hetu_call_action",arguments:{action,input,view:{result_path,expected_result_sha256:expected,offset,limit:20,max_bytes:8192}}})).structuredContent;
-    assert.equal(response.status,"succeeded",JSON.stringify(response));
-    const v=response.data.view;assert.equal(v.source_result_sha256,expected);
-    if("value" in v)return v.value;
-    if(v.fields){const fields:any={};for(const f of v.fields)fields[f.name]=await readView(action,input,expected,f.result_path);return fields;}
-    if(v.page){let text=v.page.content;if(v.next_offset!==null)text+=await readView(action,input,expected,result_path,v.next_offset);return text;}
-    if(v.items){const rows=[...v.items];if(v.next_offset!==null)rows.push(...await readView(action,input,expected,result_path,v.next_offset));return rows;}
-    if(v.next_path){const one=await readView(action,input,expected,v.next_path);const tail=await readView(action,input,expected,result_path,offset+1);return [one,...tail];}
+  const available = new Set(catalog.map((t: any) => t.name));
+  const actionByTool: Record<string, string> = toolRoutes;
+  async function readView(
+    action: string,
+    input: any,
+    expected: string,
+    result_path = "",
+    offset = 0,
+  ): Promise<any> {
+    const view = {
+      result_path,
+      expected_result_sha256: expected,
+      offset,
+      limit: 20,
+      max_bytes: 8192,
+    };
+    const arguments_ =
+      action === "hetu.plugins.invoke"
+        ? { action, input: { ...input, view } }
+        : { action, input, view };
+    const response: any = (
+      await client.callTool({ name: "hetu_call_action", arguments: arguments_ })
+    ).structuredContent;
+    assert.equal(response.status, "succeeded", JSON.stringify(response));
+    const v = response.data.view;
+    assert.equal(v.source_result_sha256, expected);
+    if ("value" in v) return v.value;
+    if (v.fields) {
+      const fields: any = {};
+      for (const f of v.fields)
+        fields[f.name] = await readView(action, input, expected, f.result_path);
+      return fields;
+    }
+    if (v.page) {
+      let text = v.page.content;
+      if (v.next_offset !== null)
+        text += await readView(
+          action,
+          input,
+          expected,
+          result_path,
+          v.next_offset,
+        );
+      return text;
+    }
+    if (v.items) {
+      const rows = [...v.items];
+      if (v.next_offset !== null)
+        rows.push(
+          ...(await readView(
+            action,
+            input,
+            expected,
+            result_path,
+            v.next_offset,
+          )),
+        );
+      return rows;
+    }
+    if (v.next_path) {
+      const one = await readView(action, input, expected, v.next_path);
+      const tail = await readView(
+        action,
+        input,
+        expected,
+        result_path,
+        offset + 1,
+      );
+      return [one, ...tail];
+    }
     throw Error("未识别的固定结果投影");
   }
-  async function readOperation(input:any):Promise<any>{
-    const fixedInput={...input};delete fixedInput.detail;let expected:string|undefined;
-    async function page(result_path:string,offset=0):Promise<any>{
-      const response:any=(await client.callTool({name:"hetu_call_action",arguments:{action:"hetu.operations.get",input:{...fixedInput,result_path,offset,limit:20,max_bytes:8192}}})).structuredContent;
-      assert.equal(response.status,"succeeded",JSON.stringify(response));
-      const v=response.data;expected??=v.result_sha256;assert.equal(v.result_sha256,expected);
-      if("value" in v)return v.value;
-      if(v.fields){const value:any={};for(const field of v.fields)value[field.name]=await page(field.result_path);return value;}
-      if(v.page){let text=v.page.content;if(v.next_offset!==null)text+=await page(result_path,v.next_offset);return text;}
-      if(v.items){const rows=[...v.items];if(v.next_offset!==null)rows.push(...await page(result_path,v.next_offset));return rows;}
-      if(v.next_path)return [await page(v.next_path),...await page(result_path,offset+1)];
+  async function readOperation(input: any): Promise<any> {
+    const fixedInput = { ...input };
+    delete fixedInput.detail;
+    let expected: string | undefined;
+    async function page(result_path: string, offset = 0): Promise<any> {
+      const response: any = (
+        await client.callTool({
+          name: "hetu_call_action",
+          arguments: {
+            action: "hetu.operations.get",
+            input: {
+              ...fixedInput,
+              result_path,
+              offset,
+              limit: 20,
+              max_bytes: 8192,
+            },
+          },
+        })
+      ).structuredContent;
+      assert.equal(response.status, "succeeded", JSON.stringify(response));
+      const v = response.data;
+      expected ??= v.result_sha256;
+      assert.equal(v.result_sha256, expected);
+      if ("value" in v) return v.value;
+      if (v.fields) {
+        const value: any = {};
+        for (const field of v.fields)
+          value[field.name] = await page(field.result_path);
+        return value;
+      }
+      if (v.page) {
+        let text = v.page.content;
+        if (v.next_offset !== null)
+          text += await page(result_path, v.next_offset);
+        return text;
+      }
+      if (v.items) {
+        const rows = [...v.items];
+        if (v.next_offset !== null)
+          rows.push(...(await page(result_path, v.next_offset)));
+        return rows;
+      }
+      if (v.next_path)
+        return [
+          await page(v.next_path),
+          ...(await page(result_path, offset + 1)),
+        ];
       throw Error("未识别的原操作结果分页");
     }
-    const result=await page("");assert.equal(createHash("sha256").update(canonical(result)).digest("hex"),expected,"原操作完整结果摘要");return result;
+    const result = await page("");
+    assert.equal(
+      createHash("sha256").update(canonical(result)).digest("hex"),
+      expected,
+      "原操作完整结果摘要",
+    );
+    return result;
   }
-  const checkedActions=new Set<string>();
+  const checkedActions = new Set<string>();
   let serial = 0;
   const call = async (name: string, args: any = {}) => {
     const record = path.join(
@@ -123,33 +227,84 @@ export async function start() {
       JSON.stringify({ name, arguments: args }),
       { mode: 0o600 },
     );
-    const chosen = available.has(name) ? {name,arguments:args} : {name:"hetu_call_action",arguments:{action:actionByTool[name],input:args}};
-    assert.ok(available.has(name)||actionByTool[name],"缺少公开动作映射："+name);
-    if(!available.has(name)&&!checkedActions.has(actionByTool[name])){
-      const discovered:any=(await client.callTool({name:"hetu_inspect_collaboration",arguments:{action:actionByTool[name],include_schema:true,limit:1}})).structuredContent;
-      await writeFile(record+".discovery.json",JSON.stringify(discovered),{mode:0o600});
-      assert.equal(discovered.status,"succeeded",JSON.stringify(discovered));
-      assert.equal(discovered.data.actions[0]?.name,actionByTool[name]);
+    const chosen = available.has(name)
+      ? { name, arguments: args }
+      : {
+          name: "hetu_call_action",
+          arguments: { action: actionByTool[name], input: args },
+        };
+    assert.ok(
+      available.has(name) || actionByTool[name],
+      "缺少公开动作映射：" + name,
+    );
+    if (!available.has(name) && !checkedActions.has(actionByTool[name])) {
+      const discovered: any = (
+        await client.callTool({
+          name: "hetu_inspect_collaboration",
+          arguments: {
+            action: actionByTool[name],
+            include_schema: true,
+            limit: 1,
+          },
+        })
+      ).structuredContent;
+      await writeFile(record + ".discovery.json", JSON.stringify(discovered), {
+        mode: 0o600,
+      });
+      assert.equal(discovered.status, "succeeded", JSON.stringify(discovered));
+      assert.equal(discovered.data.actions[0]?.name, actionByTool[name]);
       checkedActions.add(actionByTool[name]);
     }
     let result = (await client.callTool(chosen)).structuredContent as any;
-    if(result.data?.recovery?.action==="hetu.operations.get"&&result.data.response?.retained===true){
-      await writeFile(record+".wire-result.json",JSON.stringify(result),{mode:0o600});
-      result=await readOperation(result.data.recovery.input);
+    if (
+      result.data?.recovery?.action === "hetu.operations.get" &&
+      result.data.response?.retained === true
+    ) {
+      await writeFile(record + ".wire-result.json", JSON.stringify(result), {
+        mode: 0o600,
+      });
+      result = await readOperation(result.data.recovery.input);
     }
-    if(result.data?.response?.read&&result.data.response.complete===false){
-      const wire=result,expected=wire.data.response.source_result_sha256;
-      await writeFile(record+".wire-result.json",JSON.stringify(wire),{mode:0o600});
-      const read=wire.data.response.read.input;
-      if(name==="hetu_plugins_capabilities"){
+    if (
+      result.data?.response?.read &&
+      result.data.response.complete === false
+    ) {
+      const wire = result,
+        expected = wire.data.response.source_result_sha256;
+      await writeFile(record + ".wire-result.json", JSON.stringify(wire), {
+        mode: 0o600,
+      });
+      const pointer = wire.data.response.read;
+      const read =
+        pointer.action === "hetu.collaboration.invoke"
+          ? pointer.input
+          : { action: pointer.action, input: pointer.input };
+      if (name === "hetu_plugins_capabilities") {
         // 宿主动作按调用前精确发现；此处只读取本专业包合同，避免回读全部Core Schema。
-        const actions=await readView(read.action,read.input,expected,"/actions");
-        const types=await readView(read.action,read.input,expected,"/types");
-        result={...wire,data:{...wire.data,actions,types,core_actions_omitted:true}};
-      }else{
-        const data=await readView(read.action,read.input,expected);
-        result={...wire,data};
-        assert.equal(createHash("sha256").update(canonical(result)).digest("hex"),expected,"完整结果摘要保持");
+        const actions = await readView(
+          read.action,
+          read.input,
+          expected,
+          "/actions",
+        );
+        const types = await readView(
+          read.action,
+          read.input,
+          expected,
+          "/types",
+        );
+        result = {
+          ...wire,
+          data: { ...wire.data, actions, types, core_actions_omitted: true },
+        };
+      } else {
+        const data = await readView(read.action, read.input, expected);
+        result = { ...wire, data };
+        assert.equal(
+          createHash("sha256").update(canonical(result)).digest("hex"),
+          expected,
+          "完整结果摘要保持",
+        );
       }
     }
     await writeFile(record + ".result.json", JSON.stringify(result), {
@@ -169,27 +324,75 @@ export async function start() {
       locale: "zh-CN",
       operation_key: "begin",
     });
-    const created = await ok("hetu_create_novel_from_project", {
-      management_ref: begin.management_ref,
-      project_id: begin.project.project_id,
-      expected: { revision: begin.revision, sha256: begin.sha256 },
-      target_path: begin.target_path,
-      metadata: {
-        title: "雨港来信",
-        author_name: "隔离验收作者",
-        synopsis: "旧邮局来信",
-        genre: "悬疑",
-        language_tag: "zh-CN",
-        status: "writing",
+    const profile =
+      workKind === "video"
+        ? await ok("hetu_save_creation_project", {
+            management_ref: begin.management_ref,
+            project_id: begin.project.project_id,
+            expected: { revision: begin.revision, sha256: begin.sha256 },
+            brief: "独立视频的制片筹备",
+            selected_fields: {},
+            work_profile: {
+              work_type: "video",
+              language_tag: "zh-CN",
+              drama_mode: null,
+            },
+            operation_key: "video-profile",
+          })
+        : begin;
+    const created = await ok(
+      workKind === "video"
+        ? "hetu_create_video_from_project"
+        : workKind === "drama"
+          ? "hetu_create_drama_from_project"
+          : "hetu_create_novel_from_project",
+      {
+        management_ref: begin.management_ref,
+        project_id: begin.project.project_id,
+        expected: { revision: profile.revision, sha256: profile.sha256 },
+        target_path: begin.target_path,
+        ...(workKind === "video"
+          ? {
+              profile: {
+                title: "雨港人物与来信",
+                brief: "独立视频筹备验收",
+                language_tag: "zh-CN",
+              },
+            }
+          : workKind === "drama"
+            ? {
+                profile: {
+                  title: "雨港人物与来信",
+                  description: "独立剧本筹备验收",
+                  mode: "original",
+                  language_tag: "zh-CN",
+                },
+              }
+            : {
+                metadata: {
+                  title: "雨港人物与来信",
+                  author_name: "隔离验收作者",
+                  synopsis: "旧邮局来信",
+                  genre: "悬疑",
+                  language_tag: "zh-CN",
+                  status: "writing",
+                },
+              }),
+        operation_key: "create",
       },
-      operation_key: "create",
-    });
+    );
     const management = created.workspace_management_ref,
-      work = {
-        workspace_id: management.scope_ref.id,
-        kind: "novel",
-        object_id: created.novel.novel_id,
-      };
+      work =
+        workKind === "video"
+          ? created.video_project.work_ref
+          : {
+              workspace_id: management.scope_ref.id,
+              kind: workKind,
+              object_id:
+                workKind === "drama"
+                  ? created.created_workspace_ref.drama_project_id
+                  : created.novel.novel_id,
+            };
     const pkg = await ok("hetu_plugins_inspect_package", {
       package_directory: packageDirectory,
     });

@@ -1,0 +1,14 @@
+sequenceDiagram
+ participant A as 作者
+ participant X as Codex
+ participant H as 河图CLI MCP
+ participant P as 剧本杀工坊
+ A->>X: 完整创作并按角色测本
+ X->>H: 发现包Skill及真实Schema
+ X->>P: 读取旧工程旧试玩和固定来源
+ X->>P: 明确升级并准备完整内容
+ P-->>A: 角色本主持本证据与机制
+ X->>P: 固定版本模拟测本和回放
+ A->>X: 指出泄底或卡点
+ X->>P: 固定意见并局部返工
+ P-->>A: 新旧差异与待复核范围

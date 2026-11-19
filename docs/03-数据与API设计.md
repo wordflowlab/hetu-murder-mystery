@@ -16,6 +16,7 @@
 | roles | array | 是 |
 | acts | array | 是 |
 | clues | array | 是 |
+| depth | object，version=1 | 否 |
 
 ### 角色资料 `roles`
 
@@ -134,3 +135,9 @@ sequenceDiagram
 ## 专业实现细则
 
 作者结构与试玩是不同生命周期，首版共同封装在一个专业对象中，不建立第二个数据库。sessions只允许专业动作追加；save_project不能添加、改写或移除试玩。每次保存回读author_ref，对照固定作者修订逐字段核验snapshot。事件顺序号从1连续追加，回放计算当前幕、已发放、跳过和结束状态。角色资料采用白名单构造投影，HTML不嵌入全工程JSON或未来线索；session_player_view只包含实际已发放集合。试玩模拟、线下记录均不构成访问控制或外部发送。
+
+## 完整创作API
+
+可选depth保持容器Schema 1.0.0。新增动作、精确参数与集合上限见生成的[功能清单](../CAPABILITIES.md)及[可执行Schema](../contracts/plugin-manifest.json)，方法与兼容见[10](10-完整创作与机制测本.md)。不以整本保存改写或注入测本历史，旧客户端裁掉扩展的覆盖会被拒绝。
+
+完整格式通过共享$defs引用角色、幕次、线索、深度对象及快照，保持全部封闭字段约束并满足宿主固定Schema预算；不通过放宽additionalProperties或增加预算绕过合同。

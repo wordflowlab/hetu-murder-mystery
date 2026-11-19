@@ -1,0 +1,10 @@
+erDiagram
+ ROLE ||--o{ BRIEFING : reads
+ ACT ||--o{ BRIEFING : reveals
+ FACT }o--o{ BRIEFING : informs
+ CLUE }o--o{ DEDUCTION : supports
+ DEDUCTION }o--o{ DEDUCTION : requires
+ ACT ||--o{ ROUND : orders
+ ROUND ||--o{ ENDING : conditions
+ TEST_RUN ||--o{ EVENT : appends
+ TEST_RUN ||--|| AUTHOR_SNAPSHOT : fixes

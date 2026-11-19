@@ -1,12 +1,363 @@
-import React,{useState} from 'react';
-import {readArtifact} from './artifact.ts';
-type Props={p:any;tab:number;invoke:any;run:any;show:any;download:any;selection:any;write:any;[key:string]:any};
-export function ProfessionalView({p,tab,invoke,run,show,download,selection,write}:Props){
- const [role,setRole]=useState(''),[act,setAct]=useState(''),[session,setSession]=useState(''),[clue,setClue]=useState(''),[text,setText]=useState(''),[html,setHTML]=useState('');
- const roleID=p.roles.some((v:any)=>v.id===role)?role:p.roles[0]?.id,actID=p.acts.some((v:any)=>v.id===act)?act:[...p.acts].sort((a,b)=>a.order-b.order)[0]?.id,sessionID=p.sessions.some((v:any)=>v.id===session)?session:p.sessions.at(-1)?.id;
- if(tab===0)return <section><h3>故事背景</h3><p className="book-copy">{p.premise||'尚无背景'}</p><details><summary>主持资料与解答</summary><h3>主持提示</h3><p className="book-copy">{p.gm_notes}</p><h3>作者解答</h3><p className="book-copy">{p.solution}</p></details><div className="actions"><button onClick={()=>void run(()=>show('check_scenario'))}>检查整本结构</button><button onClick={()=>void run(()=>download('export_gm'))}>导出主持手册</button></div>{[...p.acts].sort((a,b)=>a.order-b.order).map(a=><article key={a.id}><h3>{a.order}　{a.title}</h3><p>{a.public_brief}</p><details><summary>本幕主持提示</summary><p>{a.gm_notes}</p></details></article>)}</section>;
- if(tab===1)return <section><div className="grid">{p.roles.map((r:any)=><article key={r.id}><h3>{r.name}</h3><p>{r.public_profile}</p><details><summary>角色私有资料</summary><p>{r.private_brief}</p></details></article>)}</div><h3>分幕线索</h3>{p.clues.map((c:any)=><article className="clue-row" key={c.id}><h3>{c.title}</h3><p>{c.text}</p><p className="muted">{p.acts.find((a:any)=>a.id===c.act_id)?.title}　{c.audience==='public'?'全体':c.role_ids.map((id:string)=>p.roles.find((r:any)=>r.id===id)?.name).join('、')}　{c.required?'必发':'可选'}</p></article>)}</section>;
- if(tab===2)return <section><div className="actions"><label>玩家角色<select aria-label="玩家角色" value={roleID??''} onChange={e=>{setRole(e.target.value);setHTML('');}}>{p.roles.map((r:any)=><option key={r.id} value={r.id}>{r.name}</option>)}</select></label><label>阅读幕次<select aria-label="阅读幕次" value={actID??''} onChange={e=>{setAct(e.target.value);setHTML('');}}>{[...p.acts].sort((a,b)=>a.order-b.order).map(a=><option key={a.id} value={a.id}>{a.title}</option>)}</select></label><button disabled={!roleID||!actID} onClick={()=>void run(async()=>{const r=await readArtifact(invoke,'export_player',{...selection(),role_id:roleID,act_id:actID});setHTML(new TextDecoder().decode(r.bytes));})}>阅读角色资料</button><button disabled={!roleID||!actID} onClick={()=>void run(()=>download('export_player',{role_id:roleID,act_id:actID}))}>导出角色资料</button></div><p className="muted">仅显示所选角色截至本幕的资料；不会附带全工程与未来线索。</p>{html&&<iframe title="固定角色资料" className="artifact-frame" srcDoc={html} sandbox=""/>}</section>;
- if(tab===3)return <section><div className="actions"><button disabled={p.roles.length<2||!p.acts.length} onClick={()=>void run(()=>write('start_session',{session_id:crypto.randomUUID(),label:'新一轮模拟试玩',mode:'agent_simulated',assignments:p.roles.map((r:any)=>({role_id:r.id,participant:r.name+' 模拟角色'}))}))}>开始模拟试玩</button><select aria-label="试玩场次" value={sessionID??''} onChange={e=>setSession(e.target.value)}>{p.sessions.map((s:any)=><option key={s.id} value={s.id}>{s.label}</option>)}</select>{sessionID&&<button onClick={()=>void run(()=>show('session_view',{session_id:sessionID}))}>回放固定试玩</button>}</div>{sessionID&&(()=>{const s=p.sessions.find((s:any)=>s.id===sessionID);return <article><h3>{s.label}</h3><p className="muted">{s.mode==='agent_simulated'?'Agent模拟，非真人研究':'线下试玩记录'}　固定作者修订 {s.author_ref.revision}</p><ol>{s.events.map((e:any)=><li key={e.sequence}>{({release:'发放线索',skip:'跳过线索',advance:'进入下一幕',guess:'角色推测',close:'结束复盘'} as any)[e.kind]}　{e.clue_id?s.snapshot.clues.find((c:any)=>c.id===e.clue_id)?.title:''}{e.text?'：'+e.text:''}</li>)}</ol><div className="actions"><select aria-label="待处理线索" value={clue||s.snapshot.clues[0]?.id||''} onChange={e=>setClue(e.target.value)}>{s.snapshot.clues.map((c:any)=><option key={c.id} value={c.id}>{c.title}</option>)}</select><button onClick={()=>void run(()=>write('release_clue',{session_id:sessionID,clue_id:clue||s.snapshot.clues[0]?.id}))}>记录发放</button><button onClick={()=>void run(()=>write('advance_act',{session_id:sessionID}))}>推进下一幕</button></div><label>原因、推测或复盘<textarea aria-label="试玩记录" value={text} onChange={e=>setText(e.target.value)}/></label><div className="actions"><button disabled={!text.trim()} onClick={()=>void run(()=>write('skip_clue',{session_id:sessionID,clue_id:clue||s.snapshot.clues[0]?.id,reason:text}))}>说明跳过原因</button><button disabled={!text.trim()} onClick={()=>void run(()=>write('record_guess',{session_id:sessionID,role_id:s.snapshot.roles[0].id,text}))}>记录首位角色推测</button><button disabled={!text.trim()} onClick={()=>void run(()=>write('close_session',{session_id:sessionID,text}))}>结束并保存复盘</button></div></article>;})()}</section>;
- return null;
+import { DepthView } from "./depth.tsx";
+import React, { useState } from "react";
+import { readArtifact } from "./artifact.ts";
+type Props = {
+  p: any;
+  tab: number;
+  invoke: any;
+  run: any;
+  show: any;
+  download: any;
+  selection: any;
+  write: any;
+  [key: string]: any;
+};
+export function ProfessionalView({
+  p,
+  tab,
+  invoke,
+  run,
+  show,
+  download,
+  selection,
+  write,
+}: Props) {
+  const [role, setRole] = useState(""),
+    [act, setAct] = useState(""),
+    [session, setSession] = useState(""),
+    [clue, setClue] = useState(""),
+    [text, setText] = useState(""),
+    [html, setHTML] = useState("");
+  if (p.depth)
+    return (
+      <DepthView
+        {...{ p, tab, invoke, run, show, download, selection, write }}
+      />
+    );
+  const roleID = p.roles.some((v: any) => v.id === role)
+      ? role
+      : p.roles[0]?.id,
+    actID = p.acts.some((v: any) => v.id === act)
+      ? act
+      : [...p.acts].sort((a, b) => a.order - b.order)[0]?.id,
+    sessionID = p.sessions.some((v: any) => v.id === session)
+      ? session
+      : p.sessions.at(-1)?.id;
+  if (tab === 0)
+    return (
+      <section>
+        <h3>故事背景</h3>
+        <p className="book-copy">{p.premise || "尚无背景"}</p>
+        <details>
+          <summary>主持资料与解答</summary>
+          <h3>主持提示</h3>
+          <p className="book-copy">{p.gm_notes}</p>
+          <h3>作者解答</h3>
+          <p className="book-copy">{p.solution}</p>
+        </details>
+        <div className="actions">
+          <button onClick={() => void run(() => show("check_scenario"))}>
+            检查整本结构
+          </button>
+          <button onClick={() => void run(() => download("export_gm"))}>
+            导出主持手册
+          </button>
+        </div>
+        {[...p.acts]
+          .sort((a, b) => a.order - b.order)
+          .map((a) => (
+            <article key={a.id}>
+              <h3>
+                {a.order}　{a.title}
+              </h3>
+              <p>{a.public_brief}</p>
+              <details>
+                <summary>本幕主持提示</summary>
+                <p>{a.gm_notes}</p>
+              </details>
+            </article>
+          ))}
+      </section>
+    );
+  if (tab === 1)
+    return (
+      <section>
+        <div className="grid">
+          {p.roles.map((r: any) => (
+            <article key={r.id}>
+              <h3>{r.name}</h3>
+              <p>{r.public_profile}</p>
+              <details>
+                <summary>角色私有资料</summary>
+                <p>{r.private_brief}</p>
+              </details>
+            </article>
+          ))}
+        </div>
+        <h3>分幕线索</h3>
+        {p.clues.map((c: any) => (
+          <article className="clue-row" key={c.id}>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+            <p className="muted">
+              {p.acts.find((a: any) => a.id === c.act_id)?.title}　
+              {c.audience === "public"
+                ? "全体"
+                : c.role_ids
+                    .map(
+                      (id: string) =>
+                        p.roles.find((r: any) => r.id === id)?.name,
+                    )
+                    .join("、")}
+              　{c.required ? "必发" : "可选"}
+            </p>
+          </article>
+        ))}
+      </section>
+    );
+  if (tab === 2)
+    return (
+      <section>
+        <div className="actions">
+          <label>
+            玩家角色
+            <select
+              aria-label="玩家角色"
+              value={roleID ?? ""}
+              onChange={(e) => {
+                setRole(e.target.value);
+                setHTML("");
+              }}
+            >
+              {p.roles.map((r: any) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            阅读幕次
+            <select
+              aria-label="阅读幕次"
+              value={actID ?? ""}
+              onChange={(e) => {
+                setAct(e.target.value);
+                setHTML("");
+              }}
+            >
+              {[...p.acts]
+                .sort((a, b) => a.order - b.order)
+                .map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.title}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <button
+            disabled={!roleID || !actID}
+            onClick={() =>
+              void run(async () => {
+                const r = await readArtifact(invoke, "export_player", {
+                  ...selection(),
+                  role_id: roleID,
+                  act_id: actID,
+                });
+                setHTML(new TextDecoder().decode(r.bytes));
+              })
+            }
+          >
+            阅读角色资料
+          </button>
+          <button
+            disabled={!roleID || !actID}
+            onClick={() =>
+              void run(() =>
+                download("export_player", { role_id: roleID, act_id: actID }),
+              )
+            }
+          >
+            导出角色资料
+          </button>
+        </div>
+        <p className="muted">
+          仅显示所选角色截至本幕的资料；不会附带全工程与未来线索。
+        </p>
+        {html && (
+          <iframe
+            title="固定角色资料"
+            className="artifact-frame"
+            srcDoc={html}
+            sandbox=""
+          />
+        )}
+      </section>
+    );
+  if (tab === 3)
+    return (
+      <section>
+        <div className="actions">
+          <button
+            disabled={p.roles.length < 2 || !p.acts.length}
+            onClick={() =>
+              void run(() =>
+                write("start_session", {
+                  session_id: crypto.randomUUID(),
+                  label: "新一轮模拟试玩",
+                  mode: "agent_simulated",
+                  assignments: p.roles.map((r: any) => ({
+                    role_id: r.id,
+                    participant: r.name + " 模拟角色",
+                  })),
+                }),
+              )
+            }
+          >
+            开始模拟试玩
+          </button>
+          <select
+            aria-label="试玩场次"
+            value={sessionID ?? ""}
+            onChange={(e) => setSession(e.target.value)}
+          >
+            {p.sessions.map((s: any) => (
+              <option key={s.id} value={s.id}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+          {sessionID && (
+            <button
+              onClick={() =>
+                void run(() => show("session_view", { session_id: sessionID }))
+              }
+            >
+              回放固定试玩
+            </button>
+          )}
+        </div>
+        {sessionID &&
+          (() => {
+            const s = p.sessions.find((s: any) => s.id === sessionID);
+            return (
+              <article>
+                <h3>{s.label}</h3>
+                <p className="muted">
+                  {s.mode === "agent_simulated"
+                    ? "Agent模拟，非真人研究"
+                    : "线下试玩记录"}
+                  　固定作者修订 {s.author_ref.revision}
+                </p>
+                <ol>
+                  {s.events.map((e: any) => (
+                    <li key={e.sequence}>
+                      {
+                        (
+                          {
+                            release: "发放线索",
+                            skip: "跳过线索",
+                            advance: "进入下一幕",
+                            guess: "角色推测",
+                            close: "结束复盘",
+                          } as any
+                        )[e.kind]
+                      }
+                      　
+                      {e.clue_id
+                        ? s.snapshot.clues.find((c: any) => c.id === e.clue_id)
+                            ?.title
+                        : ""}
+                      {e.text ? "：" + e.text : ""}
+                    </li>
+                  ))}
+                </ol>
+                <div className="actions">
+                  <select
+                    aria-label="待处理线索"
+                    value={clue || s.snapshot.clues[0]?.id || ""}
+                    onChange={(e) => setClue(e.target.value)}
+                  >
+                    {s.snapshot.clues.map((c: any) => (
+                      <option key={c.id} value={c.id}>
+                        {c.title}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() =>
+                      void run(() =>
+                        write("release_clue", {
+                          session_id: sessionID,
+                          clue_id: clue || s.snapshot.clues[0]?.id,
+                        }),
+                      )
+                    }
+                  >
+                    记录发放
+                  </button>
+                  <button
+                    onClick={() =>
+                      void run(() =>
+                        write("advance_act", { session_id: sessionID }),
+                      )
+                    }
+                  >
+                    推进下一幕
+                  </button>
+                </div>
+                <label>
+                  原因、推测或复盘
+                  <textarea
+                    aria-label="试玩记录"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                  />
+                </label>
+                <div className="actions">
+                  <button
+                    disabled={!text.trim()}
+                    onClick={() =>
+                      void run(() =>
+                        write("skip_clue", {
+                          session_id: sessionID,
+                          clue_id: clue || s.snapshot.clues[0]?.id,
+                          reason: text,
+                        }),
+                      )
+                    }
+                  >
+                    说明跳过原因
+                  </button>
+                  <button
+                    disabled={!text.trim()}
+                    onClick={() =>
+                      void run(() =>
+                        write("record_guess", {
+                          session_id: sessionID,
+                          role_id: s.snapshot.roles[0].id,
+                          text,
+                        }),
+                      )
+                    }
+                  >
+                    记录首位角色推测
+                  </button>
+                  <button
+                    disabled={!text.trim()}
+                    onClick={() =>
+                      void run(() =>
+                        write("close_session", { session_id: sessionID, text }),
+                      )
+                    }
+                  >
+                    结束并保存复盘
+                  </button>
+                </div>
+              </article>
+            );
+          })()}
+      </section>
+    );
+  return null;
 }

@@ -1,3 +1,4 @@
+import { depthFields } from "../domain/depth-config.ts";
 import { createHash } from "node:crypto";
 import type { BackendContext, ObjectResult } from "../../vendor/hetu-sdk.ts";
 import {
@@ -17,7 +18,11 @@ import {
   validate,
   validateAction,
 } from "../domain/model.ts";
-import { checkSources, readProfessional, validateTransition } from "../domain/professional.ts";
+import {
+  checkSources,
+  readProfessional,
+  validateTransition,
+} from "../domain/professional.ts";
 import { config } from "../domain/config.ts";
 import { pureAction, writeProfessional } from "../domain/professional.ts";
 import { span, sourceText } from "../domain/text.ts";
@@ -56,7 +61,22 @@ export class Project {
       "固定来源索引越界。",
     );
     const sources = await this.sources(refs);
-    for(const session of p.sessions){const basis:any=await this.store.basis(session.author_ref);const source=basis.object.content;for(const k of ["premise","gm_notes","solution","roles","acts","clues"])need(canonical(session.snapshot[k])===canonical(source[k]),"试玩快照与固定作者修订不一致。");}
+    for (const session of p.sessions) {
+      const basis: any = await this.store.basis(session.author_ref);
+      const source = basis.object.content;
+      for (const k of [
+        "premise",
+        "gm_notes",
+        "solution",
+        "roles",
+        "acts",
+        "clues",
+      ])
+        need(
+          canonical(session.snapshot[k]) === canonical(source[k]),
+          "试玩快照与固定作者修订不一致。",
+        );
+    }
     function visit(v: any) {
       if (!v || typeof v !== "object") return;
       if ("quote" in v)
@@ -76,8 +96,8 @@ export class Project {
       this.store.call(name, input),
     );
   }
-  async save(input: any, p: any, old?: ObjectResult, action="save_project") {
-    validateTransition(p,old?.object.content,action);
+  async save(input: any, p: any, old?: ObjectResult, action = "save_project") {
+    validateTransition(p, old?.object.content, action);
     await this.check(p, input.source_refs ?? old?.object.source_refs ?? []);
     return this.store.save(input, p, old);
   }
@@ -90,7 +110,9 @@ export class Project {
         if (r) return r;
       }
       if (action === "get_operation")
-        return this.store.call("hetu.extensions.operations.get", {operation_key:i.operation_key});
+        return this.store.call("hetu.extensions.operations.get", {
+          operation_key: i.operation_key,
+        });
       if (action === "list_projects")
         return this.store.call(
           i.query
@@ -137,39 +159,81 @@ export class Project {
         refs = r.object.source_refs ?? [];
       if (effects.has(action)) {
         if (!action.startsWith("put_") && !action.startsWith("remove_")) {
-          await writeProfessional(action, p, await this.sources(refs), i, (a: string, v: any) => this.store.call(a, v));
+          await writeProfessional(
+            action,
+            p,
+            await this.sources(refs),
+            i,
+            (a: string, v: any) => this.store.call(a, v),
+          );
           return await this.save(i, p, r, action);
         }
         const verb = action.startsWith("put_") ? "put" : "remove",
           item = action.slice(verb.length + 1),
-          field = (config.fields as Record<string, string>)[item];
+          field =
+            (config.fields as Record<string, string>)[item] ??
+            (depthFields as Record<string, string>)[item];
         need(field, "未知专业写动作。");
+        const aggregate = (depthFields as Record<string, string>)[item]
+          ? p.depth
+          : p;
+        need(aggregate, "请先启用完整创作结构。");
         const id = verb === "put" ? i[item].id : i[item + "_id"],
-          at = p[field].findIndex((v: any) => v.id === id);
+          at = aggregate[field].findIndex((v: any) => v.id === id);
         if (verb === "put") {
-          if (at < 0) p[field].push(i[item]);
-          else p[field][at] = i[item];
+          if (at < 0) aggregate[field].push(i[item]);
+          else aggregate[field][at] = i[item];
         } else {
           need(at >= 0, "记录不存在。");
-          p[field].splice(at, 1);
+          aggregate[field].splice(at, 1);
         }
         return await this.save(i, p, r, action);
       }
       if (action === "get_project") return success(r);
       if (action === "get_source") {
         need(refs[i.source_index], "来源索引越界。");
-        const source:any=clone((await this.sources([refs[i.source_index]]))[0]);
-        let complete=true,next_offset:number|null=null,total_bytes:number|undefined;
-        if(typeof source.content==="string"||typeof source.resource?.body==="string"){
-          const full=sourceText(source),bytes=Buffer.from(full),offset=i.offset??0;
-          need(offset<=bytes.length&&(offset===bytes.length||(bytes[offset]&0xc0)!==0x80),"来源偏移不是UTF-8边界。");
-          let end=Math.min(bytes.length,offset+(i.max_bytes??8192));while(end<bytes.length&&(bytes[end]&0xc0)===0x80)end--;
-          need(end>offset||offset===bytes.length,"分块预算不足以容纳下一个UTF-8字符。","hetu.budget_exceeded");
-          const text=bytes.subarray(offset,end).toString("utf8");
-          if(typeof source.content==="string")source.content=text;else source.resource.body=text;
-          total_bytes=bytes.length;complete=end===bytes.length;next_offset=complete?null:end;
+        const source: any = clone(
+          (await this.sources([refs[i.source_index]]))[0],
+        );
+        let complete = true,
+          next_offset: number | null = null,
+          total_bytes: number | undefined;
+        if (
+          typeof source.content === "string" ||
+          typeof source.resource?.body === "string"
+        ) {
+          const full = sourceText(source),
+            bytes = Buffer.from(full),
+            offset = i.offset ?? 0;
+          need(
+            offset <= bytes.length &&
+              (offset === bytes.length || (bytes[offset] & 0xc0) !== 0x80),
+            "来源偏移不是UTF-8边界。",
+          );
+          let end = Math.min(bytes.length, offset + (i.max_bytes ?? 8192));
+          while (end < bytes.length && (bytes[end] & 0xc0) === 0x80) end--;
+          need(
+            end > offset || offset === bytes.length,
+            "分块预算不足以容纳下一个UTF-8字符。",
+            "hetu.budget_exceeded",
+          );
+          const text = bytes.subarray(offset, end).toString("utf8");
+          if (typeof source.content === "string") source.content = text;
+          else source.resource.body = text;
+          total_bytes = bytes.length;
+          complete = end === bytes.length;
+          next_offset = complete ? null : end;
         }
-        return success({project_ref:fixed(r),source_ref:refs[i.source_index],source,complete,next_offset,...(total_bytes===undefined?{}:{total_bytes,offset:i.offset??0})});
+        return success({
+          project_ref: fixed(r),
+          source_ref: refs[i.source_index],
+          source,
+          complete,
+          next_offset,
+          ...(total_bytes === undefined
+            ? {}
+            : { total_bytes, offset: i.offset ?? 0 }),
+        });
       }
       if (action === "get_basis") {
         need(p.basis_refs[i.basis_index], "专业依据索引越界。");
@@ -202,7 +266,11 @@ export class Project {
         need(boundary(offset), "导出偏移不是UTF-8边界。");
         let end = Math.min(b.length, offset + (i.max_bytes ?? 8192));
         while (!boundary(end)) end--;
-        need(end > offset || offset === b.length, "分块预算不足以容纳下一个UTF-8字符。", "hetu.budget_exceeded");
+        need(
+          end > offset || offset === b.length,
+          "分块预算不足以容纳下一个UTF-8字符。",
+          "hetu.budget_exceeded",
+        );
         const chunk = b.subarray(offset, end).toString("utf8");
         return success({
           project_ref: fixed(r),

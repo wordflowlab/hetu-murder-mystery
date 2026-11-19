@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant C as Codex
+    participant H as 河图稳定入口
+    participant P as 本插件
+    participant K as Core
+    C->>H: 发现当前包和精确作品
+    H-->>C: Schema 包摘要 Skill
+    C->>H: 固定输入 CAS 原操作键
+    H->>P: SDK专业调用
+    P->>K: 核验来源并保存新修订
+    K-->>C: 固定回执
+    C->>H: 回读确切修订或原键
+    H-->>C: 实际成果
