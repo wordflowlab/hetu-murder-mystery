@@ -51,8 +51,21 @@ if os.environ.get('HETU_PUBLISHED_BUNDLE')=='1':
 else:package_archive=ROOT/'output'/name
 fixed=EVIDENCE/'fixed-package';unpack(package_archive,fixed,plugin['package_sha256'])
 env={**os.environ,'PATH':str(bin_dir)+os.pathsep+os.environ['PATH'],'HETU_PACKAGED_APP':str(app/'Contents/MacOS/Hetu'),'HETU_TEST_BIN':str(bin_dir),'HETU_TEST_PACKAGE':str(fixed),'HETU_SOURCE':os.environ.get('HETU_SOURCE',str(ROOT.parent/'host')),'HETU_RECEIPT_DIRECTORY':str(EVIDENCE),'HETU_TEST_HOST_COMMIT':host['git_sha']}
-results=[]
-for test in ['machine','cross','upgrade','ui']:
+results=[];tests=['machine','cross','upgrade','ui']
+reuse=os.environ.get('HETU_REUSE_MACHINE_DIRECTORY')
+if reuse:
+ # 仅复用有确切Actions来源及文件摘要的同一运行包全动作回执；其余阶段重新执行。
+ previous=Path(reuse);receipt=previous/'runtime-acceptance.json'
+ assert os.environ.get('HETU_REUSE_MACHINE_RUN') and sha(receipt)==os.environ.get('HETU_REUSE_MACHINE_SHA256')
+ prior=json.loads(receipt.read_text());prior_host=json.loads((previous/'host.json').read_text())
+ assert prior['package_sha256']==plugin['package_sha256'] and prior['plugin_id']=='org.wordflowlab.'+slug
+ assert prior_host==json.loads((EVIDENCE/'host.json').read_text()),'签名、正式归档及宿主必须完全一致'
+ assert any(x['test']=='machine' and x['exit_code']==0 for x in json.loads((previous/'results.json').read_text()))
+ import shutil
+ for name in ['runtime-acceptance.json','machine.log']:shutil.copyfile(previous/name,EVIDENCE/name)
+ results.append({'test':'machine','exit_code':0,'evidence_from_run':os.environ['HETU_REUSE_MACHINE_RUN'],'receipt_sha256':sha(receipt)})
+ tests.remove('machine')
+for test in tests:
  command=([str(bin_dir/'node'),'node_modules/@playwright/test/cli.js','test'] if test=='ui' else [str(bin_dir/'node'),'--experimental-strip-types','--test','tests/'+test+'.integration.ts'])
  with (EVIDENCE/(test+'.log')).open('w') as log:r=subprocess.run(command,cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=1200)
  results.append({'test':test,'exit_code':r.returncode});(EVIDENCE/'results.json').write_text(json.dumps(results,indent=2)+'\n');print(slug,results[-1],flush=True);assert r.returncode==0,'保留失败，先回读原操作'

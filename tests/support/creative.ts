@@ -1,5 +1,25 @@
 import assert from "node:assert/strict";
 import { sha } from "./import.ts";
+export async function readContext(c: any, taskRef: any, entry: any) {
+  let range: any, end = 0, content = "", pages = 0, last: any;
+  do {
+    last = await c.ok("hetu_read_task_context", {
+      task_ref: taskRef, context_ref: entry.context_ref,
+      max_bytes: 8192, ...(range ? { range } : {}),
+    });
+    assert.equal(last.sha256, entry.sha256, "各块保持同一固定来源");
+    assert.equal(last.range.byte_start, end, "分块不能遗漏或重复");
+    assert.equal(Buffer.byteLength(last.content), last.range.byte_end - end);
+    end = last.range.byte_end; content += last.content; pages++;
+    range = last.next_range;
+    if (!last.complete) {
+      assert.ok(range && range.byte_start === end && range.byte_end > end);
+    } else assert.equal(range, null);
+  } while (!last.complete);
+  assert.equal(end, last.size_bytes, "覆盖完整来源");
+  assert.equal(sha(content), entry.sha256, "拼接后完整原字节摘要一致");
+  return { ...last, content, range: { byte_start: 0, byte_end: end }, pages };
+}
 export async function managed(c: any, action: string, input: any, key: string) {
   const p = await c.ok("hetu_prepare_management_operation", {
     management_ref: c.management,
@@ -69,11 +89,7 @@ export async function candidate(
   );
   const contextSnapshots = [];
   for (const entry of context.entries) {
-    const read = await c.ok("hetu_read_task_context", {
-      task_ref: opened.task_ref,
-      context_ref: entry.context_ref,
-      max_bytes: 65536,
-    });
+    const read = await readContext(c, opened.task_ref, entry);
     assert.equal(read.complete, true, "本轮固定资料完整回读");
     contextSnapshots.push(read);
   }

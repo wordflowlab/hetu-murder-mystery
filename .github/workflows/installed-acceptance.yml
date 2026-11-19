@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: installed-${{ github.ref }}
   cancel-in-progress: false
@@ -60,10 +61,18 @@ jobs:
           npm run test:unit
           node scripts/verify-docs.mjs
           npm run package
+      - name: Read exact passed machine evidence for unchanged runtime package
+        working-directory: plugin
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 44525950754 --repo wordflowlab/hetu-murder-mystery --name official-installed-acceptance --dir output/reused-machine
       - name: Verify signed host and complete professional workflows
         working-directory: plugin
         env:
           GH_TOKEN: ${{ github.token }}
+          HETU_REUSE_MACHINE_DIRECTORY: output/reused-machine/output/installed-acceptance
+          HETU_REUSE_MACHINE_RUN: '44525950754'
+          HETU_REUSE_MACHINE_SHA256: 8d1491571635749965dc230424f5365b421b81332e1bf22e83f30ef788d99a70
         run: python3 scripts/accept-installed.py
       - name: Retain professional results and actual work surfaces
         if: always()
