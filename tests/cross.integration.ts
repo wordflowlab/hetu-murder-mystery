@@ -7,7 +7,7 @@ import manifest from "../contracts/plugin-manifest.json" with { type: "json" };
 import { start } from "./support/machine.ts";
 import { fixedScript } from "./support/fixed-script.ts";
 import { candidate } from "./support/creative.ts";
-import { original, selection, base } from "./support/scenario.ts";
+import { selection, base } from "./support/scenario.ts";
 import { depthScenario as scenario } from "./support/depth-scenario.ts";
 const slugs = [
   "script-supervisor",
@@ -16,6 +16,13 @@ const slugs = [
   "murder-mystery",
 ];
 const slug = manifest.id.replace("org.wordflowlab.", "");
+// 各包引文坐标必须来自同一完整原文；旧版剧本杀演示短文不能代替共同来源。
+const { original } = await import(
+  pathToFileURL(path.resolve(
+    process.env.HETU_BATCH_ROOT ?? "..",
+    "hetu-script-supervisor/tests/support/scenario.ts",
+  )).href
+);
 async function connect(c: any, peerSlug: string) {
   const root = path.resolve(
       process.env.HETU_BATCH_ROOT ?? "..",
